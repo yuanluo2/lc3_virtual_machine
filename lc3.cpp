@@ -283,7 +283,7 @@ class LC3 {
     }
 
     void op_trap_getc() {
-        registers[REG_R0] = (UINT16)getchar();
+        registers[REG_R0] = (uint16_t)getchar();
         update_cond_flag(REG_R0);
     }
 
@@ -293,7 +293,7 @@ class LC3 {
     }
 
     void op_trap_puts() {
-        UINT16* ptr = memory.data() + registers[REG_R0];
+        uint16_t* ptr = memory.data() + registers[REG_R0];
         char c;
         
         while (*ptr) {
@@ -312,12 +312,12 @@ class LC3 {
         putc(c, stdout);
         fflush(stdout);
 
-        registers[REG_R0] = (UINT16)c;
+        registers[REG_R0] = (uint16_t)c;
         update_cond_flag(REG_R0);
     }
 
     void op_trap_putsp() {
-        UINT16* ptr = memory.data() + registers[REG_R0];
+        uint16_t* ptr = memory.data() + registers[REG_R0];
         char c1, c2;
 
         while (*ptr) {
@@ -460,7 +460,9 @@ int main(int argc, char* argv[]) {
     ConsoleNotEchoed cne;
     LC3 lc3;
 
-    lc3.load_image_file(argv[1]);
-    lc3.execute();
+    if (lc3.load_image_file(argv[1])) {
+        lc3.execute();
+    }
+    
     return 0;
 }
