@@ -28,16 +28,16 @@
 */
 #define REG_NUM  10
 
-#define REG_0     0
-#define REG_1     1
-#define REG_2     2
-#define REG_3     3
-#define REG_4     4
-#define REG_5     5
-#define REG_6     6
-#define REG_7     7
-#define REG_PC    8
-#define REG_COND  9
+#define REG_R0     0
+#define REG_R1     1
+#define REG_R2     2
+#define REG_R3     3
+#define REG_R4     4
+#define REG_R5     5
+#define REG_R6     6
+#define REG_R7     7
+#define REG_PC     8
+#define REG_COND   9
 
 /*
     LC3 has 16 instructions. each instruction contains a `opcode` and a set of `parameters`.
@@ -73,7 +73,7 @@
 */
 #define COND_NEGATIVE  0x4
 #define COND_ZERO      0x2
-#define COND_POSITIVE   0x1
+#define COND_POSITIVE  0x1
 
 /*
     LC3 has 6 trap routines in its own Trap Vector Table.
@@ -223,7 +223,7 @@ void lc3_op_jsr(LC3* lc3, UINT16 instruction) {
     UINT16 bit_11 = (instruction >> 11) & 0x1;
     UINT16 PCoffset11, BaseR;
 
-    lc3->registers[REG_7] = lc3->registers[REG_PC];
+    lc3->registers[REG_R7] = lc3->registers[REG_PC];
 
     if (bit_11) {   /* JSR. */
         PCoffset11 = sign_extending(instruction & 0x7ff, 11);
@@ -310,17 +310,17 @@ void lc3_op_lea(LC3* lc3, UINT16 instruction) {
 }
 
 void lc3_op_trap_getc(LC3* lc3) {
-    lc3->registers[REG_0] = (UINT16)getchar();
-    lc3_update_condition_flag(lc3, REG_0);
+    lc3->registers[REG_R0] = (UINT16)getchar();
+    lc3_update_condition_flag(lc3, REG_R0);
 }
 
 void lc3_op_trap_out(LC3* lc3) {
-    putc((char)lc3->registers[REG_0], stdout);
+    putc((char)lc3->registers[REG_R0], stdout);
     fflush(stdout);
 }
 
 void lc3_op_trap_puts(LC3* lc3) {
-    UINT16* ptr = lc3->memory + lc3->registers[REG_0];
+    UINT16* ptr = lc3->memory + lc3->registers[REG_R0];
     char c;
     
     while (*ptr) {
@@ -340,12 +340,12 @@ void lc3_op_trap_in(LC3* lc3) {
     putc(c, stdout);
     fflush(stdout);
 
-    lc3->registers[REG_0] = (UINT16)c;
-    lc3_update_condition_flag(lc3, REG_0);
+    lc3->registers[REG_R0] = (UINT16)c;
+    lc3_update_condition_flag(lc3, REG_R0);
 }
 
 void lc3_op_trap_putsp(LC3* lc3) {
-    UINT16* ptr = lc3->memory + lc3->registers[REG_0];
+    UINT16* ptr = lc3->memory + lc3->registers[REG_R0];
     char c1, c2;
 
     while (*ptr) {
@@ -372,7 +372,7 @@ void lc3_op_trap_halt(LC3* lc3) {
 
 BOOL lc3_op_trap(LC3* lc3, UINT16 instruction) {
     UINT16 trapvect8 = instruction & 0xff;
-    lc3->registers[REG_7] = lc3->registers[REG_PC];
+    lc3->registers[REG_R7] = lc3->registers[REG_PC];
 
     switch(trapvect8) {
         case TRAP_GETC:
